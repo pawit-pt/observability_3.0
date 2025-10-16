@@ -1,0 +1,33 @@
+# Ignore unnecessary files when building Docker images
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Documentation
+README.md
+*.md
+
+# Docker files
+docker-compose*.yaml
+.dockerignore
+
+# Data directories
+*-data/
+grafana/backup/
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
