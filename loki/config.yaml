@@ -3,7 +3,6 @@ auth_enabled: false
 server:
   http_listen_port: 3100
   grpc_listen_port: 9096
-  # log_level: debug
 
 common:
   instance_addr: 127.0.0.1
@@ -23,7 +22,9 @@ query_range:
     cache:
       embedded_cache:
         enabled: true
-        max_size_mb: 100
+        max_size_mb: 2048
+  parallelise_shardable_queries: true
+  # Removed split_queries_by_interval from here, as it's in limits_config now
 
 schema_config:
   configs:
@@ -42,17 +43,17 @@ analytics:
   reporting_enabled: false
 
 limits_config:
-  reject_old_samples: true
-  reject_old_samples_max_age: 168h # 1 week
+  reject_old_samples: false
+  reject_old_samples_max_age: 2160h # 90 days
   ingestion_rate_mb: 16
   ingestion_burst_size_mb: 32
   max_cache_freshness_per_query: 10m
-  split_queries_by_interval: 15m
-  max_query_parallelism: 32
+  split_queries_by_interval: 24h        # choose your interval
+  max_query_parallelism: 32             # ensure this is supported
   max_entries_limit_per_query: 5000
 
 chunk_store_config:
-  max_look_back_period: 0s
+  max_look_back_period: 2160h # 90 days
 
 table_manager:
   retention_deletes_enabled: false
@@ -76,3 +77,9 @@ ingester:
       kvstore:
         store: inmemory
       replication_factor: 1
+
+query_scheduler:
+  max_outstanding_requests_per_tenant: 4096
+
+frontend:
+  max_outstanding_per_tenant: 4096

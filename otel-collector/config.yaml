@@ -39,12 +39,25 @@ processors:
         action: insert
 
 exporters:
-  # Export logs to Loki
+  # Export logs to Loki via HTTP
   loki:
     endpoint: http://loki:3100/loki/api/v1/push
-    default_labels_enabled:
-      exporter: true
-      job: true
+    tls:
+      insecure: true
+    format: json
+    labels:
+      attributes:
+        service.name: ""
+        deployment.environment: ""
+        level: ""
+      resource:
+        service.name: "service_name"
+        service.version: "service_version"
+  
+  # Export logs to file for debugging
+  file/logs:
+    path: /tmp/otel-logs.json
+    format: json
   
   # Export metrics to Prometheus
   prometheus:
@@ -62,8 +75,8 @@ exporters:
     tls:
       insecure: true
   
-  # Logging exporter for debugging
-  logging:
+  # Debug exporter for debugging (replaces deprecated logging exporter)
+  debug:
     verbosity: detailed
     sampling_initial: 5
     sampling_thereafter: 200
@@ -89,23 +102,23 @@ service:
     traces:
       receivers: [otlp]
       processors: [memory_limiter, batch, resource]
-      exporters: [otlp/tempo, logging]
+      exporters: [otlp/tempo, debug]
     
     # Metrics pipeline
     metrics:
       receivers: [otlp, prometheus]
       processors: [memory_limiter, batch, resource]
-      exporters: [prometheusremotewrite, prometheus, logging]
+      exporters: [prometheusremotewrite, prometheus, debug]
     
     # Logs pipeline
     logs:
       receivers: [otlp]
       processors: [memory_limiter, batch, resource]
-      exporters: [loki, logging]
+      exporters: [loki, file/logs, debug]
 
   telemetry:
     logs:
       level: "info"
     metrics:
-      address: 0.0.0.0:8888
+      level: detailed
 

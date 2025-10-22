@@ -105,9 +105,19 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
+          "expr": "rate(otelcol_process_cpu_seconds_total[1m])",
+          "legendFormat": "OTEL Collector CPU",
+          "refId": "A",
+          "exemplar": true
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
           "expr": "otel_system_cpu_usage_percent",
           "legendFormat": "{{exported_job}}",
-          "refId": "A",
+          "refId": "B",
           "exemplar": true
         }
       ],
@@ -193,9 +203,19 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
+          "expr": "otelcol_process_memory_rss / 1024 / 1024",
+          "legendFormat": "OTEL Collector Memory (MB)",
+          "refId": "A",
+          "exemplar": true
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
           "expr": "otel_system_memory_usage_MB",
           "legendFormat": "{{exported_job}}",
-          "refId": "A",
+          "refId": "B",
           "exemplar": true
         }
       ],
@@ -528,7 +548,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "count(otel_system_cpu_usage_percent)",
+          "expr": "count(count by (exported_job) (otel_http_server_request_count_total)) or vector(0)",
           "refId": "A",
           "exemplar": true
         }
@@ -787,12 +807,21 @@
             "type": "loki",
             "uid": "loki"
           },
-          "expr": "{job=~\".+\"}",
+          "expr": "{service_name=\"ec-frontend\"} |= ``",
           "refId": "A",
+          "exemplar": true
+        },
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          },
+          "expr": "{job=~\".+\"}",
+          "refId": "B",
           "exemplar": true
         }
       ],
-      "title": "Recent Logs (Loki)",
+      "title": "Recent Logs (Loki) - Vue Frontend & All Services",
       "type": "logs"
     }
   ],

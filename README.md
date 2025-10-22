@@ -2,6 +2,37 @@
 
 A comprehensive observability platform built with OpenTelemetry, providing metrics, logs, and traces collection and visualization for applications running on EC2.
 
+## ⚡ Quick Start for E-Commerce Dashboard
+
+**Your Grafana dashboard is now working!** 🎉
+
+```bash
+# 1. Start monitoring stack
+docker-compose -f docker-compose-telemetry.yaml up -d
+
+# 2. Send test data
+./script/test-ecommerce-metrics.sh -n 100 -d 2
+
+# 3. View dashboard
+open http://localhost:30700
+# Login: admin / admin
+# Dashboard: E-Commerce Application Monitoring
+```
+
+**Or use your real Next.js app:**
+```bash
+cd /Users/admin/Work/ODT/New_front_EC/renewal
+OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318 pnpm dev
+```
+
+📚 **Documentation:**
+- **Quick Start**: `QUICK_START.md` - 3-step guide
+- **Troubleshooting**: `TROUBLESHOOTING.md` - Debugging guide  
+- **App Integration**: `renewal/MONITORING_INTEGRATION.md` - Full integration
+- **Solution**: `SOLUTION_SUMMARY.md` - What was fixed
+
+---
+
 ## 🏗️ Architecture Overview
 
 This monitoring stack implements the three pillars of observability:
