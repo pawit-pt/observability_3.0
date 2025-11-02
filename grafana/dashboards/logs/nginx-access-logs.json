@@ -216,7 +216,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "quantile_over_time(0.95, {job=\"nginx\"} | json | unwrap request_time [$__range]) by ()",
+          "expr": "avg(quantile_over_time(0.95, {job=\"nginx\"} | json | unwrap request_time [$__range]))",
           "queryType": "instant",
           "refId": "A"
         }
@@ -828,7 +828,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "quantile_over_time(0.50, {job=\"nginx\"} | json | unwrap request_time [1m]) by ()",
+          "expr": "avg(quantile_over_time(0.50, {job=\"nginx\"} | json | unwrap request_time [1m]))",
           "legendFormat": "p50",
           "queryType": "range",
           "refId": "A"
@@ -839,7 +839,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "quantile_over_time(0.95, {job=\"nginx\"} | json | unwrap request_time [1m]) by ()",
+          "expr": "avg(quantile_over_time(0.95, {job=\"nginx\"} | json | unwrap request_time [1m]))",
           "legendFormat": "p95",
           "queryType": "range",
           "refId": "B"
@@ -850,7 +850,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "quantile_over_time(0.99, {job=\"nginx\"} | json | unwrap request_time [1m]) by ()",
+          "expr": "avg(quantile_over_time(0.99, {job=\"nginx\"} | json | unwrap request_time [1m]))",
           "legendFormat": "p99",
           "queryType": "range",
           "refId": "C"
@@ -921,7 +921,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "avg(avg_over_time({job=\"nginx\"} | json | unwrap request_time [$__range])) by ()",
+          "expr": "avg(avg_over_time({job=\"nginx\"} | json | unwrap request_time [$__range]))",
           "queryType": "instant",
           "refId": "A"
         }
@@ -991,7 +991,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "max(max_over_time({job=\"nginx\"} | json | unwrap request_time [$__range])) by ()",
+          "expr": "max(max_over_time({job=\"nginx\"} | json | unwrap request_time [$__range]))",
           "queryType": "instant",
           "refId": "A"
         }
@@ -1061,7 +1061,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "min(min_over_time({job=\"nginx\"} | json | unwrap request_time [$__range])) by ()",
+          "expr": "min(min_over_time({job=\"nginx\"} | json | unwrap request_time [$__range]))",
           "queryType": "instant",
           "refId": "A"
         }
@@ -1266,7 +1266,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "avg(avg_over_time({job=\"nginx\"} | json | unwrap request_time [1m])) by ()",
+          "expr": "avg(avg_over_time({job=\"nginx\"} | json | unwrap request_time [1m]))",
           "legendFormat": "avg",
           "queryType": "range",
           "refId": "A"
@@ -1277,7 +1277,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "max(max_over_time({job=\"nginx\"} | json | unwrap request_time [1m])) by ()",
+          "expr": "max(max_over_time({job=\"nginx\"} | json | unwrap request_time [1m]))",
           "legendFormat": "max",
           "queryType": "range",
           "refId": "B"
@@ -1288,7 +1288,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "min(min_over_time({job=\"nginx\"} | json | unwrap request_time [1m])) by ()",
+          "expr": "min(min_over_time({job=\"nginx\"} | json | unwrap request_time [1m]))",
           "legendFormat": "min",
           "queryType": "range",
           "refId": "C"
@@ -1602,7 +1602,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "topk(20, max by(uri, method, status) (max_over_time({job=\"nginx\"} | json | unwrap request_time [$__range])))",
+          "expr": "topk(20, max by(request_uri, request_method, status) (max_over_time({job=\"nginx\"} | json | unwrap request_time [$__range])))",
           "format": "table",
           "queryType": "instant",
           "refId": "A"
@@ -1619,9 +1619,9 @@
             "indexByName": {},
             "renameByName": {
               "Value": "Response Time",
-              "method": "Method",
+              "request_method": "Method",
               "status": "Status",
-              "uri": "Endpoint"
+              "request_uri": "Endpoint"
             }
           }
         }
@@ -1712,8 +1712,8 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "topk(10, avg by(uri) (avg_over_time({job=\"nginx\"} | json | unwrap request_time [1m])))",
-          "legendFormat": "{{uri}}",
+          "expr": "topk(10, avg by(request_uri) (avg_over_time({job=\"nginx\"} | json | unwrap request_time [1m])))",
+          "legendFormat": "{{request_uri}}",
           "queryType": "range",
           "refId": "A"
         }
@@ -1805,8 +1805,8 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "sum by(method) (rate({job=\"nginx\"} | json [1m]))",
-          "legendFormat": "{{method}}",
+          "expr": "sum by(request_method) (rate({job=\"nginx\"} | json [1m]))",
+          "legendFormat": "{{request_method}}",
           "queryType": "range",
           "refId": "A"
         }
@@ -1889,7 +1889,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "topk(10, sum by(uri) (count_over_time({job=\"nginx\"} | json [$__range])))",
+          "expr": "topk(10, sum by(request_uri) (count_over_time({job=\"nginx\"} | json [$__range])))",
           "format": "table",
           "queryType": "instant",
           "refId": "A"
@@ -1906,7 +1906,7 @@
             "indexByName": {},
             "renameByName": {
               "Value": "Requests",
-              "uri": "Endpoint"
+              "request_uri": "Endpoint"
             }
           }
         }
@@ -2018,7 +2018,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "topk(10, avg by(uri) (avg_over_time({job=\"nginx\"} | json | unwrap request_time [$__range])))",
+          "expr": "topk(10, avg by(request_uri) (avg_over_time({job=\"nginx\"} | json | unwrap request_time [$__range])))",
           "format": "table",
           "queryType": "instant",
           "refId": "A"
@@ -2035,7 +2035,7 @@
             "indexByName": {},
             "renameByName": {
               "Value": "Avg Response Time",
-              "uri": "Endpoint"
+              "request_uri": "Endpoint"
             }
           }
         }
@@ -2143,7 +2143,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "topk(10, sum by(uri) (count_over_time({job=\"nginx\"} | json | status >= 400 [$__range])))",
+          "expr": "topk(10, sum by(request_uri) (count_over_time({job=\"nginx\"} | json | status >= 400 [$__range])))",
           "format": "table",
           "queryType": "instant",
           "refId": "A"
@@ -2160,7 +2160,7 @@
             "indexByName": {},
             "renameByName": {
               "Value": "Errors",
-              "uri": "Endpoint"
+              "request_uri": "Endpoint"
             }
           }
         }
@@ -2242,7 +2242,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "topk(10, sum by(remote_ip) (count_over_time({job=\"nginx\"} | json [$__range])))",
+          "expr": "topk(10, sum by(remote_addr) (count_over_time({job=\"nginx\"} | json [$__range])))",
           "format": "table",
           "queryType": "instant",
           "refId": "A"
@@ -2259,7 +2259,7 @@
             "indexByName": {},
             "renameByName": {
               "Value": "Requests",
-              "remote_ip": "IP Address"
+              "remote_addr": "IP Address"
             }
           }
         }
@@ -2440,7 +2440,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "topk(5, sum by(host) (count_over_time({job=\"nginx\"} | json [$__range])))",
+          "expr": "topk(5, sum by(server_name) (count_over_time({job=\"nginx\"} | json [$__range])))",
           "format": "table",
           "queryType": "instant",
           "refId": "A"
@@ -2457,7 +2457,7 @@
             "indexByName": {},
             "renameByName": {
               "Value": "Requests",
-              "host": "Host"
+              "server_name": "Server Name"
             }
           }
         }
@@ -2549,7 +2549,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "sum(sum_over_time({job=\"nginx\"} | json | unwrap bytes [1m])) by ()",
+          "expr": "sum(sum_over_time({job=\"nginx\"} | json | unwrap body_bytes_sent [1m])) by ()",
           "legendFormat": "Total Bytes",
           "queryType": "range",
           "refId": "A"
@@ -2587,7 +2587,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "{job=\"nginx\"} | json | uri =~ \"$uri_filter\" | status =~ \"$status_filter\" | method =~ \"$method_filter\" | line_format \"[{{.ts}}] {{.method}} {{.uri}} - Status: {{.status}} - Time: {{.request_time}}s - IP: {{.remote_ip}}\"",
+          "expr": "{job=\"nginx\"} | json | request_uri =~ \"$uri_filter\" | status =~ \"$status_filter\" | request_method =~ \"$method_filter\" | line_format \"[{{.timestamp_processed}}] {{.request_method}} {{.request_uri}} - Status: {{.status}} - Time: {{.request_time}}s - IP: {{.remote_addr}} - Server: {{.server_name}}\"",
           "queryType": "range",
           "refId": "A"
         }
