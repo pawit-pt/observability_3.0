@@ -164,7 +164,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "sum by(level) (rate({job=\"fluent-bit\", channel=~\"$channel\", environment=~\"$environment\"} | json | __error__=\"\" [$__interval]))",
+          "expr": "sum by(level) (rate({job=\"fluent-bit\", channel=~\"$channel\", environment=~\"$environment\", service!=\"nginx-log\"} | json | __error__=\"\" [$__interval]))",
           "legendFormat": "{{level}}",
           "queryType": "range",
           "refId": "A"
@@ -254,7 +254,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "sum by(channel) (rate({job=\"fluent-bit\", channel=~\"$channel\", environment=~\"$environment\"} | json | __error__=\"\" [$__interval]))",
+          "expr": "sum by(channel) (rate({job=\"fluent-bit\", channel=~\"$channel\", environment=~\"$environment\", service!=\"nginx-log\"} | json | __error__=\"\" [$__interval]))",
           "legendFormat": "{{channel}}",
           "queryType": "range",
           "refId": "A"
@@ -321,7 +321,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "sum(rate({job=\"fluent-bit\", channel=~\"$channel\", environment=~\"$environment\"} |~ \"ERROR\" [$__range]))",
+          "expr": "sum(rate({job=\"fluent-bit\", channel=~\"$channel\", environment=~\"$environment\", service!=\"nginx-log\"} |~ \"ERROR\" [$__range]))",
           "queryType": "instant",
           "refId": "A"
         }
@@ -383,7 +383,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "sum(count_over_time({job=\"fluent-bit\", channel=~\"$channel\", environment=~\"$environment\"} [$__range]))",
+          "expr": "sum(count_over_time({job=\"fluent-bit\", channel=~\"$channel\", environment=~\"$environment\", service!=\"nginx-log\"} [$__range]))",
           "queryType": "instant",
           "refId": "A"
         }
@@ -472,7 +472,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "sum by (level) (count_over_time({job=\"fluent-bit\", channel=~\"$channel\", environment=~\"$environment\"} | json | __error__=\"\" [$__range]))",
+          "expr": "sum by (level) (count_over_time({job=\"fluent-bit\", channel=~\"$channel\", environment=~\"$environment\", service!=\"nginx-log\"} | json | __error__=\"\" [$__range]))",
           "format": "table",
           "queryType": "instant",
           "refId": "A"
@@ -577,7 +577,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "sum by (channel) (count_over_time({job=\"fluent-bit\", channel=~\"$channel\", environment=~\"$environment\"} | json | __error__=\"\" [$__range]))",
+          "expr": "sum by (channel) (count_over_time({job=\"fluent-bit\", channel=~\"$channel\", environment=~\"$environment\", service!=\"nginx-log\"} | json | __error__=\"\" [$__range]))",
           "format": "table",
           "queryType": "instant",
           "refId": "A"
@@ -630,7 +630,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "{job=\"fluent-bit\", channel=~\"$channel\", environment=~\"$environment\"} |~ \"$search\" | json | line_format \"[{{.environment | upper}}] [{{.channel | upper}}] [{{.level | upper}}] {{.message}}\"",
+          "expr": "{job=\"fluent-bit\", channel=~\"$channel\", environment=~\"$environment\", service!=\"nginx-log\"} |~ \"$search\" | json | line_format \"[{{.environment | upper}}] [{{.channel | upper}}] [{{.level | upper}}] {{.message}}\"",
           "queryType": "range",
           "refId": "A"
         }
