@@ -22,10 +22,8 @@ query_range:
     cache:
       embedded_cache:
         enabled: true
-        max_size_mb: 4096              # Increased cache from 2048 to 4096 MB
+        max_size_mb: 2048
   parallelise_shardable_queries: true
-  cache_results: true
-  max_retries: 5
   # Removed split_queries_by_interval from here, as it's in limits_config now
 
 schema_config:
@@ -52,23 +50,8 @@ limits_config:
   max_cache_freshness_per_query: 10m
   split_queries_by_interval: 24h        # choose your interval
   max_query_parallelism: 32             # ensure this is supported
-  max_entries_limit_per_query: 10000    # Increased from 5000
-  
-  # High Cardinality Query Limits
-  max_query_series: 10000               # Maximum series per query (default is 500)
-  max_query_length: 721h                # 30 days query range
-  max_streams_per_user: 0               # No limit on streams (0 = unlimited)
-  max_global_streams_per_user: 0        # No global limit
-  cardinality_limit: 100000             # Maximum unique label combinations
-  max_label_name_length: 1024           # Maximum length of label names
-  max_label_value_length: 2048          # Maximum length of label values
-  max_label_names_per_series: 30        # Maximum labels per series
-  
-  # Query Performance
-  max_query_lookback: 2160h             # 90 days lookback
-  max_concurrent_tail_requests: 10      # Concurrent tail requests
-  max_chunks_per_query: 2000000         # Maximum chunks per query
-  max_streams_matchers_per_query: 1000  # Maximum stream matchers
+  max_entries_limit_per_query: 10000
+  max_query_series: 5000                # maximum number of series per query (default: 500)
 
 chunk_store_config:
   max_look_back_period: 2160h # 90 days
@@ -86,21 +69,15 @@ compactor:
   retention_delete_worker_count: 150
 
 ingester:
-  max_chunk_age: 2h                     # Increased from 1h
-  chunk_idle_period: 1h                 # Increased from 30m
-  chunk_retain_period: 5m               # Increased from 1m
-  max_transfer_retries: 0
-  wal:
-    enabled: true
-    dir: /loki/wal
-    replay_memory_ceiling: 4GB
+  max_chunk_age: 1h
+  chunk_idle_period: 30m
+  chunk_retain_period: 1m
   lifecycler:
     address: 127.0.0.1
     ring:
       kvstore:
         store: inmemory
       replication_factor: 1
-    final_sleep: 0s
 
 query_scheduler:
   max_outstanding_requests_per_tenant: 4096

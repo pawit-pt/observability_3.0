@@ -1406,6 +1406,28 @@
                 }
               }
             ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "avg"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "dash": [10, 10],
+                  "fill": "dash"
+                }
+              }
+            ]
           }
         ]
       },
@@ -1435,8 +1457,8 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "quantile_over_time(0.5, {job=\"app-ct-backend\", service=~\"$service\", environment=~\"$environment\", channel=\"\", hostname=\"\"} | json | context=~\"$context\" | level=~\"$level\" | method=~\"$method\" | duration > 0 |~ \"$search\" | __error__=\"\" | unwrap duration [$__interval])",
-          "legendFormat": "p50",
+          "expr": "quantile_over_time(0.5, {job=\"app-ct-backend\", service=~\"$service\", environment=~\"$environment\", channel=\"\", hostname=\"\"} | json | context=~\"$context\" | level=~\"$level\" | method=~\"$method\" | duration > 0 |~ \"$search\" | __error__=\"\" | unwrap duration [5m]) by ()",
+          "legendFormat": "p50 (median)",
           "queryType": "range",
           "refId": "A"
         },
@@ -1446,7 +1468,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "quantile_over_time(0.95, {job=\"app-ct-backend\", service=~\"$service\", environment=~\"$environment\", channel=\"\", hostname=\"\"} | json | context=~\"$context\" | level=~\"$level\" | method=~\"$method\" | duration > 0 |~ \"$search\" | __error__=\"\" | unwrap duration [$__interval])",
+          "expr": "quantile_over_time(0.95, {job=\"app-ct-backend\", service=~\"$service\", environment=~\"$environment\", channel=\"\", hostname=\"\"} | json | context=~\"$context\" | level=~\"$level\" | method=~\"$method\" | duration > 0 |~ \"$search\" | __error__=\"\" | unwrap duration [5m]) by ()",
           "legendFormat": "p95",
           "queryType": "range",
           "refId": "B"
@@ -1457,10 +1479,21 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "quantile_over_time(0.99, {job=\"app-ct-backend\", service=~\"$service\", environment=~\"$environment\", channel=\"\", hostname=\"\"} | json | context=~\"$context\" | level=~\"$level\" | method=~\"$method\" | duration > 0 |~ \"$search\" | __error__=\"\" | unwrap duration [$__interval])",
+          "expr": "quantile_over_time(0.99, {job=\"app-ct-backend\", service=~\"$service\", environment=~\"$environment\", channel=\"\", hostname=\"\"} | json | context=~\"$context\" | level=~\"$level\" | method=~\"$method\" | duration > 0 |~ \"$search\" | __error__=\"\" | unwrap duration [5m]) by ()",
           "legendFormat": "p99",
           "queryType": "range",
           "refId": "C"
+        },
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "avg_over_time({job=\"app-ct-backend\", service=~\"$service\", environment=~\"$environment\", channel=\"\", hostname=\"\"} | json | context=~\"$context\" | level=~\"$level\" | method=~\"$method\" | duration > 0 |~ \"$search\" | __error__=\"\" | unwrap duration [5m])",
+          "legendFormat": "avg",
+          "queryType": "range",
+          "refId": "D"
         }
       ],
       "title": "API Response Time Distribution (p50/p95/p99)",
@@ -2110,9 +2143,9 @@
   },
   "timepicker": {},
   "timezone": "",
-  "title": "NestJS Application Logs test",
-  "uid": "nestjs-logstest",
-  "version": 1,
+  "title": "CT-Backend Application Logs",
+  "uid": "ct-backend-app-system",
+  "version": 5,
   "weekStart": ""
 }
 
