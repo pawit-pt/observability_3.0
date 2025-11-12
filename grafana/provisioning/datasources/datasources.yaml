@@ -1,7 +1,7 @@
 apiVersion: 1
 
 datasources:
-  # Loki - Logs
+  # Loki - Logs (Active - 90 day retention)
   - name: Loki
     type: loki
     access: proxy
@@ -15,6 +15,18 @@ datasources:
           matcherRegex: "trace_id=(\\w+)"
           name: TraceID
           url: '$${__value.raw}'
+    version: 1
+    editable: true
+
+  # Loki Archive - Long-term backup storage (No retention)
+  - name: loki-bk
+    type: loki
+    access: proxy
+    url: http://loki_bk:3100
+    uid: loki_archive
+    isDefault: false
+    jsonData:
+      maxLines: 1000
     version: 1
     editable: true
 

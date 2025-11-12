@@ -1,0 +1,21 @@
+# Backup files
+backups/
+
+# Loki data directory (local storage)
+loki/data/
+loki/data-backup/
+
+# Grafana data
+grafana/data/
+
+# Temporary files
+*.tmp
+*.log
+
+# macOS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+
