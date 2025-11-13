@@ -16,14 +16,15 @@ RED='\033[0;31m'
 NC='\033[0m' # No Color
 
 BACKUP_FILE="$1"
-LOKI_BK_DATA_DIR="/var/www/app/grafana/loki/data-backup"
-COMPOSE_FILE="/var/www/app/grafana/docker-compose-logging-complete.yaml"
+CURRENT_DIR="/var/www/app/grafana/"
+LOKI_BK_DATA_DIR="${CURRENT_DIR}/loki/data-backup"
+COMPOSE_FILE="${CURRENT_DIR}/docker-compose-logging-complete.yaml"
 
 if [ -z "${BACKUP_FILE}" ]; then
     echo -e "${RED}Usage: $0 <backup-file.tar.gz>${NC}"
     echo ""
     echo "Available backups:"
-    ls -lht /var/www/app/grafana/backups/loki/*.tar.gz 2>/dev/null | head -10 || echo "No backups found"
+    ls -lht ${CURRENT_DIR}/backups/loki/*.tar.gz 2>/dev/null | head -10 || echo "No backups found"
     exit 1
 fi
 

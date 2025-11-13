@@ -10,9 +10,9 @@
 set -e
 
 # Configuration
-CURRENT_DIR="/var/www/app/grafana"
-BACKUP_DIR="${BACKUP_DIR:-/var/www/app/grafana/backups/loki}"
-LOKI_DATA_DIR="/var/www/app/grafana/loki/data"
+CURRENT_DIR="/var/www/app/grafana/"
+BACKUP_DIR="${CURRENT_DIR}/backups/loki"
+LOKI_DATA_DIR="${CURRENT_DIR}/loki/data"
 RETENTION_DAYS=90  # Keep backups for 180 days (2x Loki retention)
 DATE_STAMP=$(date +%Y%m%d_%H%M%S)
 BACKUP_NAME="loki-backup-${DATE_STAMP}"

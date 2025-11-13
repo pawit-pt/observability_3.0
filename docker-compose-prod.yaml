@@ -1,0 +1,84 @@
+version: '3.8'
+
+services:
+  # Loki - Log aggregation system (host network for IAM)
+  loki:
+    image: grafana/loki:2.9.8
+    container_name: loki
+    restart: unless-stopped
+    command:
+      - "-config.file=/etc/loki/config.yaml"
+      - "-config.expand-env=true"
+    environment:
+      - AWS_REGION=ap-northeast-1
+      - BUCKET_NAME=loki-storage-prod
+      - ENVIRONMENT=production
+      - AWS_ACCESS_KEY_ID="access-key-id"
+      - AWS_SECRET_ACCESS_KEY="secret-access-key"
+    network_mode: host 
+    volumes:
+      - ./loki/config.yaml:/etc/loki/config.yaml:ro
+      - ./loki/data:/loki
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3100/ready || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Grafana - Visualization (bridge network for security)
+  grafana:
+    image: grafana/grafana:10.4.6
+    container_name: grafana
+    restart: unless-stopped
+    ports:
+      - "3070:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_AUTH_ANONYMOUS_ENABLED=false
+      - GF_AUTH_DISABLE_LOGIN_FORM=false
+      - GF_SERVER_ROOT_URL=http://localhost:3070/
+      - GF_SERVER_SERVE_FROM_SUB_PATH=false
+    volumes:
+      - ./grafana_conf/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+      - ./grafana_conf/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./grafana_conf/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana-data:/var/lib/grafana
+    networks:
+      - grafana
+    extra_hosts:
+      - "loki:host-gateway" 
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3000/api/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+
+#  # Loki Backup - Archive/Long-term storage (No retention)
+#   loki_bk:
+#     image: grafana/loki:2.9.8
+#     container_name: loki_bk
+#     restart: unless-stopped
+#     command: -config.file=/etc/loki/config.yaml
+#     ports:
+#       - "3101:3100"  # External:Internal - Access via localhost:3101
+#     volumes:
+#       - ./loki/config-backup.yaml:/etc/loki/config.yaml:ro
+#       - ./loki/data-backup:/loki
+#     networks:
+#       - grafana
+#     healthcheck:
+#       test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3100/ready || exit 1"]
+#       interval: 10s
+#       timeout: 5s
+#       retries: 5
+
+volumes:
+  grafana-data:
+    driver: local
+
+networks:
+  grafana:
+    driver: bridge
