@@ -101,8 +101,6 @@ limits_config:
   max_entries_limit_per_query: 10000
   max_query_series: 5000
   max_query_lookback: 2160h  #  90 days max single query range
-  
-  # NEW: Cardinality protection
   max_streams_per_user: 0  # 0 = unlimited, set number if needed
   max_global_streams_per_user: 10000  # Prevent stream explosion
   
@@ -110,9 +108,8 @@ limits_config:
   max_chunks_per_query: 2000000
   max_query_length: 17304h  # 30 days single query
   
-  #  NEW: Line size protection (IMPORTANT for OOM prevention)
   max_line_size: 262144
-  max_line_size_truncate: true  # Truncate instead of reject
+  max_line_size_truncate: true  
 
 #  UPDATED: 6-month retention
 chunk_store_config:
