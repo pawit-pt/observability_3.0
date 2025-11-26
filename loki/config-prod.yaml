@@ -34,7 +34,6 @@ query_range:
         max_size_mb: 2048  # Increased for better query caching
   parallelise_shardable_queries: true
   max_retries: 5
-  split_queries_by_interval: 1h  # Split large queries into smaller chunks
   align_queries_with_step: true
   cache_results: true
 
@@ -59,12 +58,10 @@ storage_config:
     insecure: false
     sse_encryption: true
     http_config:
-      idle_conn_timeout: 120s  # Increased for better connection reuse
-      response_header_timeout: 60s  # Increased timeout
+      idle_conn_timeout: 300s  # Increased for better connection reuse
+      response_header_timeout: 300s  # Increased to prevent timeout on large queries
       insecure_skip_verify: false
-      max_idle_connections: 100  # Improved connection pooling
-      max_idle_connections_per_host: 100
-      max_connections_per_host: 0  # No limit
+
   tsdb_shipper:
     active_index_directory: /loki/tsdb-index
     cache_location: /loki/tsdb-cache
@@ -105,13 +102,16 @@ limits_config:
 
   # Query limits - OPTIMIZED FOR PERFORMANCE
   max_cache_freshness_per_query: 10m
-  split_queries_by_interval: 1h  # Smaller intervals = faster parallel execution
+  split_queries_by_interval: 30m  # Smaller intervals = faster parallel execution
   max_query_parallelism: 64  # Increased for better parallelization
   max_entries_limit_per_query: 50000  # Increased for larger result sets
   max_query_series: 10000  # Increased for complex queries
   max_query_lookback: 2160h  #  90 days max single query range
   max_streams_per_user: 0  # 0 = unlimited, set number if needed
   max_global_streams_per_user: 10000  # Prevent stream explosion
+
+  # Timeout configurations to prevent 504 errors
+  query_timeout: 5m  # Maximum query execution time (moved to limits_config in 2.9+)
 
   #  Chunk limits - OPTIMIZED
   max_chunks_per_query: 5000000  # Increased for better performance
@@ -180,19 +180,30 @@ query_scheduler:
     max_recv_msg_size: 104857600  # 100MB
     max_send_msg_size: 104857600  # 100MB
 
+# Querier configuration for timeout handling
+querier:
+  max_concurrent: 20  # Maximum concurrent queries (available in 2.9.x)
+  query_ingesters_within: 3h  # Only query recent data from ingesters
+  engine:
+    timeout: 5m  # Query engine timeout (deprecated but still works in 2.9.x)
+    max_look_back_period: 30s  # Lookback for instant queries
+
 # Frontend configuration for better query handling
 frontend:
   max_outstanding_per_tenant: 4096
   compress_responses: true
   log_queries_longer_than: 10s  # Log slow queries for monitoring
+  tail_proxy_url: ""  # Disable tail proxy to reduce overhead
+  downstream_url: ""
 
 # Frontend worker for parallel query execution
 frontend_worker:
-  parallelism: 10
+  parallelism: 16  # Increased parallelism for better query performance
   match_max_concurrent: true
   grpc_client_config:
     max_recv_msg_size: 104857600  # 100MB
     max_send_msg_size: 104857600  # 100MB
+    grpc_compression: gzip  # Enable compression
 
 # Index cache for faster label queries
 index_gateway:
